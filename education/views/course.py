@@ -1,19 +1,18 @@
-from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
-from rest_framework.response import Response
+
 
 from education.models import Course
 from education.permissions import IsOwner, IsManager
 from education.serializers.course import CourseSerializer
 
 
-class CourseViewSet(viewsets.ViewSet):
+class CourseViewSet(viewsets.ModelViewSet):
     serializer_class = CourseSerializer
     queryset = Course.objects.all()
-    permission_classes = get_permissions()
+    permission_classes = [IsAdminUser]
 
-    def create(self, request):
+    def create(self, request, *args, **kwargs):
         new_lesson = request.serializer.save()
         new_lesson.user = self.request.user
         new_lesson.save()
@@ -27,4 +26,4 @@ class CourseViewSet(viewsets.ViewSet):
             permission_classes = [IsAuthenticated, IsOwner]
         else:
             permission_classes = [IsAdminUser]
-        return permission_classes
+        return [permission() for permission in permission_classes]
