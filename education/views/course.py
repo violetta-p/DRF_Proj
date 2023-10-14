@@ -3,6 +3,7 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
 
 from education.models import Course
+from education.paginators import CoursePaginator
 from education.permissions import IsOwner, IsManager
 from education.serializers.course import CourseSerializer
 
@@ -10,13 +11,14 @@ from education.serializers.course import CourseSerializer
 class CourseViewSet(viewsets.ModelViewSet):
     serializer_class = CourseSerializer
     queryset = Course.objects.all()
-    permission_classes = [IsAdminUser]
+    #permission_classes = [IsAdminUser]
+    pagination_class = CoursePaginator
 
     def create(self, request, *args, **kwargs):
         new_lesson = request.serializer.save()
         new_lesson.user = self.request.user
         new_lesson.save()
-
+"""
     def get_permissions(self):
         if self.action == 'list':
             permission_classes = [IsAuthenticated]
@@ -27,3 +29,4 @@ class CourseViewSet(viewsets.ModelViewSet):
         else:
             permission_classes = [IsAdminUser]
         return [permission() for permission in permission_classes]
+"""

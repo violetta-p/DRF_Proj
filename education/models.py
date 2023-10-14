@@ -8,7 +8,7 @@ NULLABLE = {'blank': True, 'null': True}
 class Course(models.Model):
 
     name = models.CharField(max_length=100, verbose_name='Course name')
-    description = models.TextField(verbose_name='Description')
+    description = models.TextField(verbose_name='Description', **NULLABLE)
     preview_pic = models.ImageField(upload_to='course_pictures/', **NULLABLE, verbose_name='Picture')
     creation_date = models.DateField(auto_now_add=True, verbose_name='Creation date')
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='User', **NULLABLE)
@@ -23,9 +23,9 @@ class Course(models.Model):
 
 class Lesson(models.Model):
     name = models.CharField(max_length=100, verbose_name='Lesson name')
-    description = models.TextField(verbose_name='Description')
+    description = models.TextField(verbose_name='Description', **NULLABLE,)
     preview_pic = models.ImageField(upload_to='lesson_pictures/', **NULLABLE, verbose_name='Picture')
-    url = models.URLField(max_length=1000, verbose_name='Url')
+    url = models.URLField(max_length=1000, verbose_name='Url', **NULLABLE,)
     creation_date = models.DateField(auto_now_add=True, verbose_name='Creation date')
     course = models.ForeignKey('Course', on_delete=models.CASCADE, verbose_name='Course', **NULLABLE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='User', **NULLABLE)
