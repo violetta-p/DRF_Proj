@@ -82,6 +82,6 @@ class LessonTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_delete_lesson(self):
-        response = self.client.delete(
+        response = self.client.destroy(
             reverse('lesson_delete', kwargs={'pk': self.lesson.pk}))
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
