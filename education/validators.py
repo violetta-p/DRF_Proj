@@ -9,7 +9,11 @@ class URLValidator:
 
     def __call__(self, value):
         val = dict(value).get(self.field)
-        url_str = re.match(r'https://www.youtube.com', val)
-        if not bool(url_str):
-            raise ValidationError('Only YouTube links are allowed!')
+        url_pattern = r'https?://\S+|www\.\S+'
+        youtube_pattern = r'(?:https?://)?(?:www\.)?youtube\.com'
+
+        links = re.findall(url_pattern, val)
+        for link in links:
+            if not bool(re.match(youtube_pattern, link)):
+                raise ValidationError('Only YouTube links are allowed!')
 

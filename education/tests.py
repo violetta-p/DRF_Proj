@@ -18,7 +18,9 @@ class LessonTestCase(APITestCase):
         )
         self.lesson = Lesson.objects.create(
             name='test_lesson',
-            course=self.course
+            course=self.course,
+            url=r'https://www.youtube.com/link'
+
         )
 
     def test_get_list(self):
@@ -45,9 +47,9 @@ class LessonTestCase(APITestCase):
                         "name": "test_lesson",
                         "description": None,
                         "preview_pic": None,
-                        "url": None,
+                        "url": 'https://www.youtube.com/link',
                         "creation_date": current_date,
-                        "course": 1,
+                        "course": 2,
                         "user": None
 
                     }
@@ -55,15 +57,18 @@ class LessonTestCase(APITestCase):
             }
         )
 
-    def test_lesson_create(self):
+    def test_create_lesson(self):
         data = {
             'name': 'test2',
-            'course': self.course.id
+            'course': self.course.id,
+            'url': 'https://www.youtube.com/link'
 
         }
+
         response = self.client.post(
             reverse('education:lesson_create'),
-            data=data,
+            data=data
+
         )
 
         self.assertEqual(
@@ -74,14 +79,15 @@ class LessonTestCase(APITestCase):
     def test_update_lesson(self):
         data2 = {
             'name': 'test_updated',
+            'url': 'https://www.youtube.com/new_link'
         }
         response = self.client.put(
             reverse('education:lesson_update', kwargs={'pk': self.lesson.pk}),
             data=data2,
         )
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_delete_lesson(self):
-        response = self.client.destroy(
-            reverse('lesson_delete', kwargs={'pk': self.lesson.pk}))
+        response = self.client.delete(
+            reverse('education:lesson_delete', kwargs={'pk': self.lesson.pk}))
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)

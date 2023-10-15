@@ -14,10 +14,10 @@ class CourseViewSet(viewsets.ModelViewSet):
     #permission_classes = [IsAdminUser]
     pagination_class = CoursePaginator
 
-    def create(self, request, *args, **kwargs):
-        new_lesson = request.serializer.save()
-        new_lesson.user = self.request.user
-        new_lesson.save()
+    def perform_create(self, serializer):
+        new_course = serializer.save()
+        new_course.user = self.request.user
+        new_course.save()
 """
     def get_permissions(self):
         if self.action == 'list':
