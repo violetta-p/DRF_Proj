@@ -1,24 +1,35 @@
 import json
+import os
 from datetime import date
 
+from django.contrib.gis.geos import factory
 from rest_framework import status
-from rest_framework.test import APITestCase
+from rest_framework.test import APITestCase, APIClient, force_authenticate
 from django.urls import reverse
 
 
 from education.models import Course, Lesson
+from users.models import User
 
 current_date = date.today().strftime("%Y-%m-%d")
 
 
 class LessonTestCase(APITestCase):
-    def setUp(self) -> None:
-        self.course = Course.objects.create(
+
+    @classmethod
+    def setUpTestData(cls) -> None:
+        cls.user = User.objects.create(
+            email="Test@mail.ru",
+            password="Test12345",
+            is_active=True,
+        )
+
+        cls.course = Course.objects.create(
             name='test_course'
         )
-        self.lesson = Lesson.objects.create(
+        cls.lesson = Lesson.objects.create(
             name='test_lesson',
-            course=self.course,
+            course=cls.course,
             url=r'https://www.youtube.com/link'
 
         )
@@ -43,13 +54,13 @@ class LessonTestCase(APITestCase):
                 "previous": None,
                 "results": [
                     {
-                        "id": 2,
+                        "id": 1,
                         "name": "test_lesson",
                         "description": None,
                         "preview_pic": None,
                         "url": 'https://www.youtube.com/link',
                         "creation_date": current_date,
-                        "course": 2,
+                        "course": 1,
                         "user": None
 
                     }
@@ -58,6 +69,7 @@ class LessonTestCase(APITestCase):
         )
 
     def test_create_lesson(self):
+
         data = {
             'name': 'test2',
             'course': self.course.id,

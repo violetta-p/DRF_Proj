@@ -17,7 +17,8 @@ class CourseSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_is_auth_user_active(course):
-        if Subscription.objects.filter(course_id=course.pk, is_active=True) is not None:
+        user = CourseSerializer.current_user
+        if Subscription.objects.filter(course_id=course.pk, user_id=user, is_active=True) is not None:
             return True
         return False
 
