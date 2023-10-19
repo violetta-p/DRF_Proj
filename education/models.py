@@ -40,15 +40,15 @@ class Lesson(models.Model):
 
 class Payment(models.Model):
 
-    payment_options = [('cash', 'cash payment'),
-                       ('card', 'transfer')]
+    payment_options = [('cash', 'afterpay'),
+                       ('card', 'card')]
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='User', **NULLABLE)
     payment_date = models.DateTimeField(auto_now_add=True, verbose_name='Date')
     course = models.ForeignKey('Course', on_delete=models.CASCADE, verbose_name='Course', **NULLABLE)
     lesson = models.ForeignKey('Lesson', on_delete=models.CASCADE, verbose_name='Lesson', **NULLABLE)
     payment_sum = models.IntegerField(verbose_name='Sum')
-    payment_method = models.CharField(max_length=30, choices=payment_options, default='transfer', verbose_name='Payment options')
+    payment_method = models.CharField(max_length=30, choices=payment_options, default='card', verbose_name='Payment options')
 
     def __str__(self):
         return f'{self.user} - {self.lesson}'
