@@ -1,10 +1,18 @@
+from django.shortcuts import render
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import generics
 from rest_framework.filters import OrderingFilter
 from rest_framework.permissions import IsAuthenticated
+from rest_framework import status, generics
+from rest_framework.response import Response
 
+import os
+import stripe
+
+from users.models import User
 from education.models import Payment
 from education.serializers.payment import PaymentSerializer
+
+stripe.api_key = os.getenv('STRIPE_API_KEY')
 
 
 class PaymentListAPIView(generics.ListAPIView):
@@ -15,46 +23,49 @@ class PaymentListAPIView(generics.ListAPIView):
     ordering_fields = ('payment_date',)
     permission_classes = [IsAuthenticated]
 
-import os
 
-import stripe
-from django.shortcuts import render
+class PaymentCreateAPIView(generics.CreateAPIView):
+    serializer_class = PaymentSerializer
 
-from rest_framework import status, generics
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
+    def perform_create(self, serializer):
+        new_payment = serializer.save()
+        new_payment.user = self.request.user
+        new_payment.save()
 
-from education.models import Payment
-from users.models import User
-
-stripe.api_key = os.getenv('STRIPE_API_KEY')
-
-
-@api_view(['POST'])
-def create_payment(request):
-    payment = stripe.PaymentIntent.create(
-        amount=float(Payment.payment_sum),
-        currency='rub',
-        payment_method_types=[Payment.payment_method],
-        receipt_email=str(User.email),
-    )
-
-    return Response(status=status.HTTP_200_OK, data=payment)
+        stripe.PaymentIntent.create(
+            amount=float(new_payment.payment_sum),
+            currency='rub',
+            payment_method_types=[new_payment.payment_method],
+            receipt_email=str(self.request.user.email),
+        )
 
 
-@api_view(['POST'])
-def confirm_payment_intent(request):
-    data = request.data
-    payment_intent_id = data['payment_intent_id']
+class PaymentRetrieveAPIView(generics.RetrieveAPIView):
+    serializer_class = PaymentSerializer
+    queryset = Payment.objects.all()
 
-    stripe.PaymentIntent.confirm(payment_intent_id)
+    def retrieve(self, request, *args, **kwargs):
+        current_user = self.request.user
+        data = stripe.Charge.list(customer=current_user.id, limit=10)
+        last_payment = data.get('data')[0]
 
-    return Response(status=status.HTTP_200_OK)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
 
 
-@api_view(['GET'])
-def get_payment_info(request):
-    data = Payment.objects.last()
-    last_payment_id = data['id']
-    stripe.PaymentIntent.retrieve(last_payment_id)
+
+
+# @api_view(['POST'])
+# def create_payment(request):
+#     payment = stripe.PaymentIntent.create(
+#         amount=float(Payment.payment_sum),
+#         currency='rub',
+#         payment_method_types=[Payment.payment_method],
+#         receipt_email=str(User.email),
+#     )
+#
+#     return Response(status=status.HTTP_200_OK, data=payment)
+#
+
 
