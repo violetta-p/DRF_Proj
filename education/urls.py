@@ -6,8 +6,7 @@ from rest_framework.routers import DefaultRouter
 from education.views.course import CourseViewSet
 from education.views.lesson import LessonCreateAPIView, LessonListAPIView, LessonRetrieveAPIView, LessonUpdateAPIView, \
     LessonDestroyAPIView
-from education.views.payment import PaymentListAPIView, create_payment, confirm_payment_intent, get_payment_info, \
-    PaymentRetrieveAPIView, PaymentCreateAPIView
+from education.views.payment import PaymentListAPIView, PaymentRetrieveAPIView, PaymentCreateAPIView
 
 app_name = EducationConfig.name
 

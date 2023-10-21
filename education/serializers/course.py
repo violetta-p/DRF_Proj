@@ -5,6 +5,7 @@ from subscription.models import Subscription
 
 
 class CourseSerializer(serializers.ModelSerializer):
+    pk = serializers.Field()
     lessons_count = serializers.SerializerMethodField()
     lessons = serializers.SerializerMethodField()
     current_user = serializers.SerializerMethodField('_user')
@@ -32,4 +33,4 @@ class CourseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Course
-        fields = ('name', 'lessons_count', 'lessons', 'current_user', 'is_auth_user_active')
+        fields = ('pk', 'name', 'lessons_count', 'lessons', 'current_user', 'is_auth_user_active')

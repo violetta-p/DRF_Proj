@@ -27,6 +27,7 @@ class SubscriptionUpdateAPIView(generics.UpdateAPIView):
     queryset = Subscription.objects.all()
     # permission_classes = [IsAuthenticated]
 
+
 class SubscriptionDestroyAPIView(generics.DestroyAPIView):
     queryset = Subscription.objects.all()
     #permission_classes = [IsAuthenticated]

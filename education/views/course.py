@@ -6,6 +6,7 @@ from education.models import Course
 from education.paginators import CoursePaginator
 from education.permissions import IsOwner, IsManager
 from education.serializers.course import CourseSerializer
+from subscription.tasks import send_message
 
 
 class CourseViewSet(viewsets.ModelViewSet):
@@ -18,6 +19,11 @@ class CourseViewSet(viewsets.ModelViewSet):
         new_course = serializer.save()
         new_course.user = self.request.user
         new_course.save()
+
+    def perform_update(self, serializer):
+        course = serializer.save()
+        send_message(int(course.pk))
+
 """
     def get_permissions(self):
         if self.action == 'list':
