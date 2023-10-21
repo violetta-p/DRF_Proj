@@ -8,7 +8,7 @@ from rest_framework.response import Response
 import os
 import stripe
 
-from users.models import User
+from education.services import create_stripe_payment, get_stripe_payment
 from education.models import Payment
 from education.serializers.payment import PaymentSerializer
 
@@ -32,12 +32,7 @@ class PaymentCreateAPIView(generics.CreateAPIView):
         new_payment.user = self.request.user
         new_payment.save()
 
-        stripe.PaymentIntent.create(
-            amount=float(new_payment.payment_sum),
-            currency='rub',
-            payment_method_types=[new_payment.payment_method],
-            receipt_email=str(self.request.user.email),
-        )
+        create_stripe_payment(new_payment, self.request.user)
 
 
 class PaymentRetrieveAPIView(generics.RetrieveAPIView):
@@ -46,26 +41,7 @@ class PaymentRetrieveAPIView(generics.RetrieveAPIView):
 
     def retrieve(self, request, *args, **kwargs):
         current_user = self.request.user
-        data = stripe.Charge.list(customer=current_user.id, limit=10)
-        last_payment = data.get('data')[0]
+        instance = get_stripe_payment(current_user)
 
-        instance = self.get_object()
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
-
-
-
-
-# @api_view(['POST'])
-# def create_payment(request):
-#     payment = stripe.PaymentIntent.create(
-#         amount=float(Payment.payment_sum),
-#         currency='rub',
-#         payment_method_types=[Payment.payment_method],
-#         receipt_email=str(User.email),
-#     )
-#
-#     return Response(status=status.HTTP_200_OK, data=payment)
-#
-
-
