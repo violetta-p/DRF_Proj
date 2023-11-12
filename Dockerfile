@@ -2,10 +2,10 @@ FROM python:3
 
 WORKDIR /code
 
-COPY ./requirements.txt /code/
+COPY ./requirements.txt .
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -r requirements.txt
 
 COPY . .
 
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+#CMD ["python", "manage.py", "runserver", "127.0.0.1:8000"]
