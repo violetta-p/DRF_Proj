@@ -82,6 +82,55 @@ Windows:
   1. Создать образы: docker-compose build
   2. Запустить контейнеры: docker-compose up
 
+Настройка сервера:
+    Установите необходимое ПО на сервере:
+        sudo apt-get update
+        sudo apt-get install postgresql postgresql-contrib python3-pip
+    
+Создайте базу данных и пользователя PostgreSQL для вашего проекта:
+        sudo -u postgres psql
+        CREATE DATABASE yourdbname;
+        CREATE USER yourdbuser WITH PASSWORD 'yourpassword';
+        ALTER ROLE yourdbuser SET client_encoding TO 'utf8';
+        ALTER ROLE yourdbuser SET default_transaction_isolation TO 'read committed';
+        ALTER ROLE yourdbuser SET timezone TO 'UTC';
+        GRANT ALL PRIVILEGES ON DATABASE yourdbname TO yourdbuser;
+
+Установите необходимые Python-пакеты на сервер с помощью pip:
+        pip3 install virtualenv
+
+Скопируйте свой Django-проект на сервер (например, через git clone или через SCP).
+
+Настройка Gunicorn и systemd:
+        1. Создайте виртуальное окружение для вашего проекта:
+                virtualenv venv
+                source venv/bin/activate
+
+        2. Установите зависимости проекта:
+                pip install -r requirements.txt
+
+        3. Создайте unit-файл для systemd (например, yourproject.service) для управления Gunicorn как сервисом. Пример unit-файла:
+
+Пример Unix-файла
+[Unit]
+Description="project_name" daemon
+After=network.target
+
+[Service]
+User=your_username # Имя пользователя владельца проекта в Linux
+Group=your_groupname # Группа, к которой относится пользователь
+WorkingDirectory=/path/to/your/project # Путь к рабочей директории проекта
+ExecStart=/path/to/venv/bin/gunicorn --config /path/to/gunicorn_config.py your_project.wsgi:application
+# Команда для запуска проекта
+
+[Install]
+WantedBy=multi-user.target # Ожидание запуска системы в нормальном состоянии доступа для пользователей
+
+
+Запустите и активируйте сервис:
+sudo systemctl start project_name
+sudo systemctl enable project_name
+
 
 ###Автор проекта:
 @Viit_115
