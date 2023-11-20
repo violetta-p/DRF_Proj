@@ -82,12 +82,12 @@ Windows:
   1. Создать образы: docker-compose build
   2. Запустить контейнеры: docker-compose up
 
-Настройка сервера:
+* Настройка сервера:
     Установите необходимое ПО на сервере:
         sudo apt-get update
         sudo apt-get install postgresql postgresql-contrib python3-pip
     
-Создайте базу данных и пользователя PostgreSQL для вашего проекта:
+* Создайте базу данных и пользователя PostgreSQL для вашего проекта:
         sudo -u postgres psql
         CREATE DATABASE yourdbname;
         CREATE USER yourdbuser WITH PASSWORD 'yourpassword';
@@ -96,12 +96,12 @@ Windows:
         ALTER ROLE yourdbuser SET timezone TO 'UTC';
         GRANT ALL PRIVILEGES ON DATABASE yourdbname TO yourdbuser;
 
-Установите необходимые Python-пакеты на сервер с помощью pip:
+* Установите необходимые Python-пакеты на сервер с помощью pip:
         pip3 install virtualenv
 
-Скопируйте свой Django-проект на сервер (например, через git clone или через SCP).
+* Скопируйте свой Django-проект на сервер (например, через git clone или через SCP).
 
-Настройка Gunicorn и systemd:
+* Настройка Gunicorn и systemd:
         1. Создайте виртуальное окружение для вашего проекта:
                 virtualenv venv
                 source venv/bin/activate
@@ -127,7 +127,7 @@ ExecStart=/path/to/venv/bin/gunicorn --config /path/to/gunicorn_config.py your_p
 WantedBy=multi-user.target # Ожидание запуска системы в нормальном состоянии доступа для пользователей
 
 
-Запустите и активируйте сервис:
+* Запустите и активируйте сервис:
 sudo systemctl start project_name
 sudo systemctl enable project_name
 
